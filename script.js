@@ -4,6 +4,7 @@ var deviceID;
 var correct_answer;
 var correct = 0;
 var total = 0;
+var start;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -213,6 +214,9 @@ function sample(choices, n) {
 function playGame() {
     let menu = document.getElementById("menu");
     menu.innerHTML = "Which song is this? "
+    
+    setInterval(timer, 100);
+    
     nextSong()
 }
 
@@ -234,10 +238,6 @@ function nextSong() {
     // Shuffle the choices
     shuffle(choices)
 
-    for (let choice of choices) {
-        console.log(`${choice.track.artists[0].name} – ${choice.track.name}`)
-    }
-
     // Add selection box / buttons
     var dropdown = document.createElement("select");
     dropdown.setAttribute("id", "dropdown");
@@ -254,6 +254,8 @@ function nextSong() {
     }
 
     play(deviceID, current.track.uri)
+
+    start = (new Date()).getTime();
 }
 
 function selectAnswer() {
@@ -270,4 +272,9 @@ function selectAnswer() {
 
     dropdown.parentNode.removeChild(dropdown)
     nextSong()
+}
+
+function timer() {
+    let now = (new Date()).getTime();
+    document.getElementById("time").innerHTML = `Time: ${(Math.round(((now - start) / 1000) * 10) / 10).toFixed(1)}`;
 }
