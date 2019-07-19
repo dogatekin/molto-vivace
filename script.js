@@ -1,6 +1,10 @@
 var playlists = [];
 var trackList = [];
 var deviceID;
+var correct_answer;
+var remaining;
+var correct = 0;
+var total = 0;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -129,7 +133,7 @@ function createMenu() {
 
     //Create and append select list
     var selectList = document.createElement("select");
-    selectList.setAttribute("id", "mySelect");
+    selectList.setAttribute("id", "selectList");
     selectList.setAttribute("onchange", "selectPlaylist();")
     selectList.setAttribute("onFocus", "this.selectedIndex = -1;")
     menu.appendChild(selectList);
@@ -144,7 +148,7 @@ function createMenu() {
 }
 
 function selectPlaylist() {
-    let selectList = document.getElementById("mySelect");
+    let selectList = document.getElementById("selectList");
     let selectedPlaylist = selectList.options[selectList.selectedIndex].value;
     getTracks(selectedPlaylist);
 }
@@ -195,14 +199,14 @@ function shuffle(a) {
 
 function sample(choices, n, except) {
     let samples = []
-    let indices = [...Array(choices.length).keys()];
+    let copy = [...choices]
 
-    indices.splice(except, 1)
+    copy.splice(except, 1)
 
     while (n > 0) {
-        let i = Math.floor(Math.random() * indices.length);
-        samples.push(choices[i]);
-        indices.splice(i, 1);
+        let i = Math.floor(Math.random() * copy.length);
+        samples.push(copy[i]);
+        copy.splice(i, 1);
         n--;
     }
 
@@ -211,37 +215,67 @@ function sample(choices, n, except) {
 
 function playGame() {
     // Clear screen
-    let menu = document.getElementById("menu")
-    menu.parentNode.removeChild(menu)
+    let menu = document.getElementById("menu");
+    menu.innerHTML = "Which song is this? "
 
     // Clone the list so we can remove as we play (but keep all for the random options)
-    let remaining = [...trackList]
+    remaining = [...trackList];
 
-    // Play 10 songs
-    for (let i = 0; i < 10; i++) {
-        // Get a random song
-        let index = Math.floor(Math.random() * remaining.length);
-        let current = remaining[index]
-        let correct_answer = `${current.track.artists[0].name} – ${current.track.name}`
+    nextSong()
+}
 
-        // Remove it so we don't see it again
-        remaining.splice(index, 1)
+function nextSong() {
+    // Get a random song
+    let index = Math.floor(Math.random() * remaining.length);
+    let current = remaining[index]
+    correct_answer = `${current.track.artists[0].name} – ${current.track.name}`
 
-        // Get three random options except the correct one
-        options = sample(trackList, 3, trackList.indexOf(current))
+    // Remove it so we don't see it again
+    remaining.splice(index, 1)
 
-        // Add correct answer to the options
-        options.push(current)
+    // Get three random choices except the correct one
+    choices = sample(trackList, 3, trackList.indexOf(current))
 
-        // Shuffle the options
-        shuffle(options)
+    // Add correct answer to the choices
+    choices.push(current)
 
-        for (let option of options) {
-            console.log(`${option.track.artists[0].name} – ${option.track.name}`)
-        }
+    // Shuffle the choices
+    shuffle(choices)
 
-        // Add selection box / buttons
-
-        play(deviceID, current.track.uri)
+    for (let choice of choices) {
+        console.log(`${choice.track.artists[0].name} – ${choice.track.name}`)
     }
+
+    // Add selection box / buttons
+    var dropdown = document.createElement("select");
+    dropdown.setAttribute("id", "dropdown");
+    dropdown.setAttribute("onchange", "selectAnswer();")
+    dropdown.setAttribute("onFocus", "this.selectedIndex = -1;")
+    menu.appendChild(dropdown);
+
+    //Create and append the options
+    for (let choice of choices) {
+        var option = document.createElement("option");
+        option.setAttribute("value", `${choice.track.artists[0].name} – ${choice.track.name}`);
+        option.text = `${choice.track.artists[0].name} – ${choice.track.name}`;
+        dropdown.appendChild(option);
+    }
+
+    play(deviceID, current.track.uri)
+}
+
+function selectAnswer() {
+    let dropdown = document.getElementById("dropdown");
+    let answer = dropdown.options[dropdown.selectedIndex].value;
+
+    if (answer == correct_answer) {
+        correct++
+    }
+
+    total++;
+
+    document.getElementById("score").innerHTML = `Score: ${correct} / ${total}`;
+
+    dropdown.parentNode.removeChild(dropdown)
+    nextSong()
 }
