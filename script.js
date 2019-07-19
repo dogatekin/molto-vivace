@@ -18,7 +18,7 @@ const authEndpoint = 'https://accounts.spotify.com/authorize';
 
 // Replace with your app's client ID, redirect URI and desired scopes
 const clientId = '96e1183ff4d14390a4afd7902e2ac80d';
-const redirectUri = 'https://spotify-web-playback.glitch.me';
+const redirectUri = 'https://dogatekin.github.io/molto-vivace/';
 const scopes = [
   'streaming',
   'user-read-birthdate',
