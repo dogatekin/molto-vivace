@@ -2,7 +2,6 @@ var playlists = [];
 var trackList = [];
 var deviceID;
 var correct_answer;
-var remaining;
 var correct = 0;
 var total = 0;
 
@@ -197,11 +196,9 @@ function shuffle(a) {
     return a;
 }
 
-function sample(choices, n, except) {
+function sample(choices, n) {
     let samples = []
     let copy = [...choices]
-
-    copy.splice(except, 1)
 
     while (n > 0) {
         let i = Math.floor(Math.random() * copy.length);
@@ -214,27 +211,22 @@ function sample(choices, n, except) {
 }
 
 function playGame() {
-    // Clear screen
     let menu = document.getElementById("menu");
     menu.innerHTML = "Which song is this? "
-
-    // Clone the list so we can remove as we play (but keep all for the random options)
-    remaining = [...trackList];
-
     nextSong()
 }
 
 function nextSong() {
     // Get a random song
-    let index = Math.floor(Math.random() * remaining.length);
-    let current = remaining[index]
+    let index = Math.floor(Math.random() * trackList.length);
+    let current = trackList[index]
     correct_answer = `${current.track.artists[0].name} – ${current.track.name}`
 
     // Remove it so we don't see it again
-    remaining.splice(index, 1)
+    trackList.splice(index, 1)
 
     // Get three random choices except the correct one
-    choices = sample(trackList, 3, trackList.indexOf(current))
+    choices = sample(trackList, 3)
 
     // Add correct answer to the choices
     choices.push(current)
