@@ -1,5 +1,6 @@
 var playlists = [];
 var trackList = [];
+var deviceID;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -59,6 +60,7 @@ window.onSpotifyPlayerAPIReady = () => {
     // Ready
     player.on('ready', data => {
         console.log('Ready with Device ID', data.device_id);
+        deviceID = data.device_id
 
         getPlaylists()
 
@@ -73,16 +75,16 @@ window.onSpotifyPlayerAPIReady = () => {
 }
 
 // Play a specified track on the Web Playback SDK's device ID
-function play(device_id) {
+function play(device_id, uri) {
     $.ajax({
         url: "https://api.spotify.com/v1/me/player/play?device_id=" + device_id,
         type: "PUT",
-        data: '{"uris": ["spotify:track:7n92QzQomRCLlciO14X0kd"]}',
+        data: `{"uris": ["${uri}"]}`,
         beforeSend: function (xhr) {
             xhr.setRequestHeader('Authorization', 'Bearer ' + _token);
         },
         success: function (data) {
-            console.log(data)
+            // console.log(data)
         }
     });
 }
@@ -92,8 +94,6 @@ function appendPlaylists(newPlaylists) {
 }
 
 function getPlaylists() {
-
-
     $.ajax({
         async: false,
         url: "https://api.spotify.com/v1/me/playlists?limit=50",
@@ -104,7 +104,7 @@ function getPlaylists() {
         success: function (data) {
             let numPlaylists = data.total
             appendPlaylists(data.items);
-            
+
             for (let i = 1; i < Math.ceil(numPlaylists / 50); i++) {
                 $.ajax({
                     async: false,
@@ -149,7 +149,6 @@ function selectPlaylist() {
     getTracks(selectedPlaylist);
 }
 
-
 function appendTracks(tracks) {
     trackList = trackList.concat(tracks)
 }
@@ -163,10 +162,10 @@ function getTracks(playlist_id = "3Y2s9qvglOXfjEINuMkspX") {
         },
         success: function (response) {
             let numTracks = response.tracks.total
-            
+
             for (let i = 0; i < Math.ceil(numTracks / 100); i++) {
                 $.ajax({
-                    async: false,  // Deprecated :(
+                    async: false, // Deprecated :(
                     url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks?offset=${100*i}`,
                     type: "GET",
                     beforeSend: function (xhr) {
@@ -183,11 +182,66 @@ function getTracks(playlist_id = "3Y2s9qvglOXfjEINuMkspX") {
     });
 }
 
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+function sample(choices, n, except) {
+    let samples = []
+    let indices = [...Array(choices.length).keys()];
+
+    indices.splice(except, 1)
+
+    while (n > 0) {
+        let i = Math.floor(Math.random() * indices.length);
+        samples.push(choices[i]);
+        indices.splice(i, 1);
+        n--;
+    }
+
+    return samples
+}
+
 function playGame() {
+    // Clear screen
     let menu = document.getElementById("menu")
     menu.parentNode.removeChild(menu)
 
-    for (let track of trackList) {
-        console.log(track.track.name)
+    // Clone the list so we can remove as we play (but keep all for the random options)
+    let remaining = [...trackList]
+
+    // Play 10 songs
+    for (let i = 0; i < 10; i++) {
+        // Get a random song
+        let index = Math.floor(Math.random() * remaining.length);
+        let current = remaining[index]
+        let correct_answer = `${current.track.artists[0].name} – ${current.track.name}`
+
+        // Remove it so we don't see it again
+        remaining.splice(index, 1)
+
+        // Get three random options except the correct one
+        options = sample(trackList, 3, trackList.indexOf(current))
+
+        // Add correct answer to the options
+        options.push(current)
+
+        // Shuffle the options
+        shuffle(options)
+
+        for (let option of options) {
+            console.log(`${option.track.artists[0].name} – ${option.track.name}`)
+        }
+
+        // Add selection box / buttons
+
+        play(deviceID, current.track.uri)
     }
 }
