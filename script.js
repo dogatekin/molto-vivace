@@ -11,6 +11,7 @@ var timeInterval;
 var player;
 var totalTime = 0;
 var numOptions;
+var numSongs;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -132,13 +133,20 @@ function createMenu() {
     for (let playlist of playlists) {
         var option = document.createElement("option");
         option.setAttribute("value", playlist.id);
-        option.text = `${playlist.owner.display_name} – ${playlist.name}`;
+        option.text = `${playlist.owner.display_name} – ${playlist.name} (${playlist.tracks.total})`;
         selectList.appendChild(option);
     }
 }
 
 function selectPlaylist() {
     numOptions = document.getElementById("numOptions").value;
+    numSongs = document.getElementById("numSongs").value;
+
+    if (numSongs == "All") {
+        numSongs = 0
+    }
+    console.log(numSongs)
+
     let form = document.getElementById("form")    
     form.parentNode.removeChild(form)
 
@@ -212,9 +220,13 @@ function playGame() {
     
     remaining = [...trackList]
 
+    if (numSongs == 0) {
+        numSongs = remaining.length
+    }
+
     timeInterval = setInterval(timer, 100);
     
-    if (remaining.length > 0) {
+    if (remaining.length > 0 && numSongs > 0) {
         nextSong()
     }
     else {
@@ -268,6 +280,8 @@ function nextSong() {
     play(deviceID, current.track.uri)
 
     start = (new Date()).getTime();
+    
+    numSongs--;
 }
 
 function select(button) {
@@ -295,7 +309,7 @@ function select(button) {
             menu.removeChild(menu.firstChild);
         }
 
-        if (remaining.length > 0) {
+        if (remaining.length > 0 && numSongs > 0) {
             nextSong()
         }
         else {
