@@ -2,7 +2,8 @@ var playlists = [];
 var trackList = [];
 var remaining;
 var deviceID;
-var correct_answer;
+var correctAnswer;
+var correctButton;
 var correct = 0;
 var total = 0;
 var start;
@@ -220,7 +221,7 @@ function nextSong() {
     // Get a random song
     let index = Math.floor(Math.random() * remaining.length);
     let current = remaining[index]
-    correct_answer = `${current.track.artists[0].name} – ${current.track.name}`
+    correctAnswer = `${current.track.artists[0].name} – ${current.track.name}`
 
     // Remove it so we don't see it again
     remaining.splice(index, 1)
@@ -245,7 +246,12 @@ function nextSong() {
         let option = document.createElement("a");
         option.className += "btn btn-lg btn-salmon"
         option.innerHTML = `${choice.track.artists[0].name} – ${choice.track.name}`
-        option.setAttribute("onclick", "select(this.innerHTML)")
+
+        if (option.innerHTML == correctAnswer) {
+            correctButton = option
+        }
+
+        option.setAttribute("onclick", "select(this)")
         menu.appendChild(option)
 
         menu.appendChild(document.createElement("br"))
@@ -257,37 +263,47 @@ function nextSong() {
     start = (new Date()).getTime();
 }
 
-function select(answer) {
+function select(button) {
+    let answer = button.innerHTML
+
     let now = (new Date()).getTime();
     totalTime += (now - start) / 1000
 
-    if (answer == correct_answer) {
+    if (answer == correctAnswer) {
+        button.style.backgroundColor = "rgb(87,181,96)"
         correct++
+    }
+    else {
+        button.style.backgroundColor = "darkred"
+        correctButton.style.backgroundColor = "rgb(87,181,96)"
     }
 
     total++;
 
-    document.getElementById("score").innerHTML = `Score: ${correct} / ${total}`;
+    setTimeout(function() {
+        document.getElementById("score").innerHTML = `Score: ${correct} / ${total}`;
 
-    // Clear and get ready for next song
-    while (menu.firstChild) {
-        menu.removeChild(menu.firstChild);
-    }
+        // Clear and get ready for next song
+        while (menu.firstChild) {
+            menu.removeChild(menu.firstChild);
+        }
 
-    if (remaining.length > 0) {
-        nextSong()
-    }
-    else {
-        clearInterval(timeInterval)
+        if (remaining.length > 0) {
+            nextSong()
+        }
+        else {
+            clearInterval(timeInterval)
 
-        let time = document.getElementById("time")
-        time.innerHTML = `Total time: ${(Math.round((totalTime * 10)) / 10).toFixed(1)}`
-        
-        player.pause()
-        player.disconnect()
+            let time = document.getElementById("time")
+            time.innerHTML = `Total time: ${(Math.round((totalTime * 10)) / 10).toFixed(1)}`
+            
+            player.pause()
+            player.disconnect()
 
-        menu.innerHTML = "<h3>Congratulations!<br></h3>"
-    }
+            menu.innerHTML = "<h3>Congratulations!<br></h3>"
+        }
+    }, 1500)
+    
 }
 
 function timer() {
