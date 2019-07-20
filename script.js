@@ -10,6 +10,7 @@ var start;
 var timeInterval;
 var player;
 var totalTime = 0;
+var numOptions;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -137,6 +138,10 @@ function createMenu() {
 }
 
 function selectPlaylist() {
+    numOptions = document.getElementById("numOptions").value;
+    let form = document.getElementById("form")    
+    form.parentNode.removeChild(form)
+
     let selectList = document.getElementById("selectList");
     let selectedPlaylist = selectList.options[selectList.selectedIndex].value;
     getTracks(selectedPlaylist);
@@ -202,6 +207,8 @@ function sample(choices, n) {
 
 function playGame() {
     let menu = document.getElementById("menu");
+
+    // menu.style.textAlign = "center"
     
     remaining = [...trackList]
 
@@ -227,13 +234,13 @@ function nextSong() {
     remaining.splice(index, 1)
 
     // Get three random choices except the correct one
-    if (remaining.length >= 3) {
-        choices = sample(remaining, 3)
+    if (remaining.length >= numOptions - 1) {
+        choices = sample(remaining, numOptions - 1)
     }
     else {
         copy = [...trackList]
         copy.splice(copy.indexOf(current), 1)
-        choices = sample(copy, 3)
+        choices = sample(copy, numOptions - 1)
     }
 
     // Add correct answer to the choices
