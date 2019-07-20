@@ -35,11 +35,10 @@ const authEndpoint = 'https://accounts.spotify.com/authorize';
 const clientId = '96e1183ff4d14390a4afd7902e2ac80d';
 const redirectUri = 'https://dogatekin.github.io/molto-vivace/'; // online
 // const redirectUri = 'http://localhost:8080/index.html'; // local
-// const scopes = [
-//     'streaming',
-//     'user-modify-playback-state'
-// ];
-const scopes = ["streaming", "user-read-birthdate", "user-read-email", "user-read-private"]
+const scopes = [
+    'streaming',
+    'user-modify-playback-state'
+];
 
 // If there is no token, redirect to Spotify authorization
 if (!_token) {
