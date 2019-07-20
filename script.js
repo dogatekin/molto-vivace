@@ -213,7 +213,7 @@ function sample(choices, n) {
 
 function playGame() {
     let menu = document.getElementById("menu");
-    menu.innerHTML = "Which song is this? "
+    menu.innerHTML = "Which song is this?<br><br>"
     
     setInterval(timer, 100);
     
