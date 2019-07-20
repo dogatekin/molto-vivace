@@ -6,6 +6,8 @@ var correct_answer;
 var correct = 0;
 var total = 0;
 var start;
+var timeInterval;
+var player;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -41,7 +43,7 @@ if (!_token) {
 
 // Set up the Web Playback SDK
 window.onSpotifyPlayerAPIReady = () => {
-    const player = new Spotify.Player({
+    player = new Spotify.Player({
         name: 'Web Playback SDK Template',
         getOAuthToken: cb => {
             cb(_token);
@@ -201,7 +203,7 @@ function playGame() {
     
     remaining = [...trackList]
 
-    setInterval(timer, 100);
+    timeInterval = setInterval(timer, 100);
     
     if (remaining.length > 0) {
         nextSong()
@@ -272,10 +274,15 @@ function select(answer) {
         nextSong()
     }
     else {
-        menu.innerHTML = "Congratulations!<br>"
+        clearInterval(timeInterval)
+
         let time = document.getElementById("time")
         time.parentNode.removeChild(time)
+        
         player.pause()
+        player.disconnect()
+
+        menu.innerHTML = "<h3>Congratulations!<br></h3>"
     }
 }
 
