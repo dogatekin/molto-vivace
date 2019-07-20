@@ -8,6 +8,7 @@ var total = 0;
 var start;
 var timeInterval;
 var player;
+var totalTime = 0;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -257,6 +258,9 @@ function nextSong() {
 }
 
 function select(answer) {
+    let now = (new Date()).getTime();
+    totalTime += (now - start) / 1000
+
     if (answer == correct_answer) {
         correct++
     }
@@ -277,29 +281,13 @@ function select(answer) {
         clearInterval(timeInterval)
 
         let time = document.getElementById("time")
-        time.parentNode.removeChild(time)
+        time.innerHTML = `Total time: ${(Math.round((totalTime * 10)) / 10).toFixed(1)}`
         
         player.pause()
         player.disconnect()
 
         menu.innerHTML = "<h3>Congratulations!<br></h3>"
     }
-}
-
-function selectAnswer() {
-    let dropdown = document.getElementById("dropdown");
-    let answer = dropdown.options[dropdown.selectedIndex].value;
-
-    if (answer == correct_answer) {
-        correct++
-    }
-
-    total++;
-
-    document.getElementById("score").innerHTML = `Score: ${correct} / ${total}`;
-
-    dropdown.parentNode.removeChild(dropdown)
-    nextSong()
 }
 
 function timer() {
