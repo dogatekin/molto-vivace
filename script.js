@@ -54,28 +54,16 @@ window.onSpotifyPlayerAPIReady = () => {
     player.on('account_error', e => console.error(e));
     player.on('playback_error', e => console.error(e));
 
-    // Playback status updates
-    //   player.on('player_state_changed', state => {
-    //     console.log(state)
-    //     $('#current-track').attr('src', state.track_window.current_track.album.images[0].url);
-    //     $('#current-track-name').text(state.track_window.current_track.name);
-    //   });
-
     // Ready
     player.on('ready', data => {
         console.log('Ready with Device ID', data.device_id);
         deviceID = data.device_id
 
         getPlaylists()
-
-        // Play a track using our new device ID
-        // play(data.device_id);
     });
 
     // Connect to the player!
     player.connect();
-
-    //   getTracks()
 }
 
 // Play a specified track on the Web Playback SDK's device ID
@@ -213,7 +201,6 @@ function sample(choices, n) {
 
 function playGame() {
     let menu = document.getElementById("menu");
-    menu.innerHTML = "Which song is this?<br><br>"
     
     setInterval(timer, 100);
     
@@ -221,6 +208,8 @@ function playGame() {
 }
 
 function nextSong() {
+    menu.innerHTML = "Which song is this?<br><br>"
+
     // Get a random song
     let index = Math.floor(Math.random() * trackList.length);
     let current = trackList[index]
@@ -238,24 +227,37 @@ function nextSong() {
     // Shuffle the choices
     shuffle(choices)
 
-    // Add selection box / buttons
-    var dropdown = document.createElement("select");
-    dropdown.setAttribute("id", "dropdown");
-    dropdown.setAttribute("onchange", "selectAnswer();")
-    dropdown.setAttribute("onFocus", "this.selectedIndex = -1;")
-    menu.appendChild(dropdown);
-
-    //Create and append the options
     for (let choice of choices) {
-        var option = document.createElement("option");
-        option.setAttribute("value", `${choice.track.artists[0].name} – ${choice.track.name}`);
-        option.text = `${choice.track.artists[0].name} – ${choice.track.name}`;
-        dropdown.appendChild(option);
+        let option = document.createElement("a");
+        option.className += "btn btn-lg btn-salmon"
+        option.innerHTML = `${choice.track.artists[0].name} – ${choice.track.name}`
+        option.setAttribute("onclick", "select(this.innerHTML)")
+        menu.appendChild(option)
+
+        menu.appendChild(document.createElement("br"))
+        menu.appendChild(document.createElement("br"))
     }
 
     play(deviceID, current.track.uri)
 
     start = (new Date()).getTime();
+}
+
+function select(answer) {
+    if (answer == correct_answer) {
+        correct++
+    }
+
+    total++;
+
+    document.getElementById("score").innerHTML = `Score: ${correct} / ${total}`;
+
+    // Clear and get ready for next song
+    while (menu.firstChild) {
+        menu.removeChild(menu.firstChild);
+    }
+
+    nextSong()
 }
 
 function selectAnswer() {
