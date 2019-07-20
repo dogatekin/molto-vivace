@@ -1,5 +1,6 @@
 var playlists = [];
 var trackList = [];
+var remaining;
 var deviceID;
 var correct_answer;
 var correct = 0;
@@ -39,7 +40,6 @@ if (!_token) {
 }
 
 // Set up the Web Playback SDK
-
 window.onSpotifyPlayerAPIReady = () => {
     const player = new Spotify.Player({
         name: 'Web Playback SDK Template',
@@ -74,9 +74,6 @@ function play(device_id, uri) {
         data: `{"uris": ["${uri}"]}`,
         beforeSend: function (xhr) {
             xhr.setRequestHeader('Authorization', 'Bearer ' + _token);
-        },
-        success: function (data) {
-            // console.log(data)
         }
     });
 }
@@ -157,7 +154,7 @@ function getTracks(playlist_id = "3Y2s9qvglOXfjEINuMkspX") {
 
             for (let i = 0; i < Math.ceil(numTracks / 100); i++) {
                 $.ajax({
-                    async: false, // Deprecated :(
+                    async: false, 
                     url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks?offset=${100*i}`,
                     type: "GET",
                     beforeSend: function (xhr) {
@@ -202,24 +199,38 @@ function sample(choices, n) {
 function playGame() {
     let menu = document.getElementById("menu");
     
+    remaining = [...trackList]
+
     setInterval(timer, 100);
     
-    nextSong()
+    if (remaining.length > 0) {
+        nextSong()
+    }
+    else {
+        console.log("There are no songs here!")
+    }
 }
 
 function nextSong() {
     menu.innerHTML = "Which song is this?<br><br>"
 
     // Get a random song
-    let index = Math.floor(Math.random() * trackList.length);
-    let current = trackList[index]
+    let index = Math.floor(Math.random() * remaining.length);
+    let current = remaining[index]
     correct_answer = `${current.track.artists[0].name} – ${current.track.name}`
 
     // Remove it so we don't see it again
-    trackList.splice(index, 1)
+    remaining.splice(index, 1)
 
     // Get three random choices except the correct one
-    choices = sample(trackList, 3)
+    if (remaining.length >= 3) {
+        choices = sample(remaining, 3)
+    }
+    else {
+        copy = [...trackList]
+        copy.splice(copy.indexOf(current), 1)
+        choices = sample(copy, 3)
+    }
 
     // Add correct answer to the choices
     choices.push(current)
@@ -257,7 +268,15 @@ function select(answer) {
         menu.removeChild(menu.firstChild);
     }
 
-    nextSong()
+    if (remaining.length > 0) {
+        nextSong()
+    }
+    else {
+        menu.innerHTML = "Congratulations!<br>"
+        let time = document.getElementById("time")
+        time.parentNode.removeChild(time)
+        player.pause()
+    }
 }
 
 function selectAnswer() {
