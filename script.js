@@ -142,11 +142,6 @@ function selectPlaylist() {
     numOptions = document.getElementById("numOptions").value;
     numSongs = document.getElementById("numSongs").value;
 
-    if (numSongs == "All") {
-        numSongs = 0
-    }
-    console.log(numSongs)
-
     let form = document.getElementById("form")    
     form.parentNode.removeChild(form)
 
@@ -214,13 +209,21 @@ function sample(choices, n) {
 }
 
 function playGame() {
-    let menu = document.getElementById("menu");
+    let test = document.getElementById("test")
+    let menu = document.getElementById("menu")
+    let score = document.getElementById("score")
+    let time = document.getElementById("time")
 
-    // menu.style.textAlign = "center"
+    test.style.textAlign = "center"
+    menu.style.display = "inline-block"
+    menu.style.textAlign = "left"
+
+    score.innerHTML = "Score: 0 / 0"
+    time.innerHTML = "Time: 0.0"
     
     remaining = [...trackList]
 
-    if (numSongs == 0) {
+    if (numSongs == "All") {
         numSongs = remaining.length
     }
 
@@ -235,7 +238,7 @@ function playGame() {
 }
 
 function nextSong() {
-    menu.innerHTML = "Which song is this?<br><br>"
+    menu.innerHTML = "<p style='text-align:center;'>Which song is this?<br><br></p>"
 
     // Get a random song
     let index = Math.floor(Math.random() * remaining.length);
@@ -263,6 +266,7 @@ function nextSong() {
 
     for (let choice of choices) {
         let option = document.createElement("a");
+        option.style.width = "100%"
         option.className += "btn btn-lg btn-salmon"
         option.innerHTML = `${choice.track.artists[0].name} – ${choice.track.name}`
 
