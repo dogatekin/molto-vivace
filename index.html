@@ -1,37 +1,43 @@
 <!DOCTYPE html>
 <html>
-  
-  <head>
-    <title>Spotify Quiz</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://sp-bootstrap.global.ssl.fastly.net/8.0.0/sp-bootstrap.min.css" rel="stylesheet" />
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.min.js"
-      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-      crossorigin="anonymous"></script>
-    
-    <!-- Include the Web Playback SDK -->
-    <script src="https://sdk.scdn.co/spotify-player.js"></script>
-    
-    <!-- Include our Javascript -->
-    <script src="script.js" defer></script>
-  </head>
-  
-  <body class="container">
-    <h1 class="text-salmon" style="text-align: center;">Spotify Quiz</h1>
 
-    <form id="form">
-      <h4>How many songs do you want to play? &ensp; <input type="text" id="numSongs" maxlength="3" size="3" value="All" style="text-align:center;"> <br> </h4>
-      <h4>How many multiple-choice options do you want? &ensp; <input type="text" id="numOptions" maxlength="2" size="2" value="4" style="text-align:center;"> <br> </h4>
-    </form>    
+<head>
+  <title>Spotify Quiz</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://sp-bootstrap.global.ssl.fastly.net/8.0.0/sp-bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 
-    <div id="test">    
-      <h4 id="menu">Choose one of your playlists to start:<br><br></h4> 
-      <h5 id="score"></h5>
-      <h6 id="time"></h6>  
-    </div>
-  </body>
-  
+  <!-- Include the Web Playback SDK -->
+  <script src="https://sdk.scdn.co/spotify-player.js"></script>
+
+  <!-- Include our Javascript -->
+  <script src="script.js" defer></script>
+</head>
+
+<body class="container">
+  <h1 class="text-salmon" style="text-align: center;">Spotify Quiz</h1>
+
+  <form id="form">
+    <h4>How many songs do you want to play? &ensp; <input type="text" id="numSongs" maxlength="3" size="3" value="All"
+        style="text-align:center;"> <br> </h4>
+    <h4>How many multiple-choice options do you want? &ensp; <input type="text" id="numOptions" maxlength="2" size="2"
+        value="4" style="text-align:center;"> <br> </h4>
+  </form>
+
+  <div id="test">
+    <h4 id="menu">Choose one of your playlists to start:<br><br></h4>
+    <h5 id="score"></h5>
+    <h6 id="time"></h6>
+  </div>
+
+  <footer>
+    <p>Made by <a href="https://dogatekin.github.io">Doga Tekin</a>. See the code on <a
+        href="https://github.com/dogatekin/molto-vivace/">GitHub</a>.</p>
+  </footer>
+</body>
+
 </html>
