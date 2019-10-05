@@ -5,3 +5,11 @@ footer {
   width: 100%;
   text-align: center;
 }
+
+.hoverer {
+  opacity: 0;
+}
+
+.hoverer:hover {
+  opacity: 1;
+}

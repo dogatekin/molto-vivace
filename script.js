@@ -12,6 +12,7 @@ var player;
 var totalTime = 0;
 var numOptions;
 var numSongs;
+var hardmode;
 
 // Get the hash of the url
 const hash = window.location.hash
@@ -141,8 +142,9 @@ function createMenu() {
 function selectPlaylist() {
     numOptions = document.getElementById("numOptions").value;
     numSongs = document.getElementById("numSongs").value;
+    hardmode = document.getElementById("hardmode").checked;
 
-    let form = document.getElementById("form")    
+    let form = document.getElementById("form")
     form.parentNode.removeChild(form)
 
     let selectList = document.getElementById("selectList");
@@ -166,7 +168,7 @@ function getTracks(playlist_id = "3Y2s9qvglOXfjEINuMkspX") {
 
             for (let i = 0; i < Math.ceil(numTracks / 100); i++) {
                 $.ajax({
-                    async: false, 
+                    async: false,
                     url: `https://api.spotify.com/v1/playlists/${playlist_id}/tracks?offset=${100*i}`,
                     type: "GET",
                     beforeSend: function (xhr) {
@@ -220,7 +222,7 @@ function playGame() {
 
     score.innerHTML = "Score: 0 / 0"
     time.innerHTML = "Time: 0.0"
-    
+
     remaining = [...trackList]
 
     if (numSongs == "All") {
@@ -228,11 +230,10 @@ function playGame() {
     }
 
     timeInterval = setInterval(timer, 100);
-    
+
     if (remaining.length > 0 && numSongs > 0) {
         nextSong()
-    }
-    else {
+    } else {
         console.log("There are no songs here!")
     }
 }
@@ -251,8 +252,7 @@ function nextSong() {
     // Get three random choices except the correct one
     if (remaining.length >= numOptions - 1) {
         choices = sample(remaining, numOptions - 1)
-    }
-    else {
+    } else {
         copy = [...trackList]
         copy.splice(copy.indexOf(current), 1)
         choices = sample(copy, numOptions - 1)
@@ -268,6 +268,9 @@ function nextSong() {
         let option = document.createElement("a");
         option.style.width = "100%"
         option.className += "btn btn-lg btn-salmon"
+        if (hardmode) {
+            option.className += " hoverer"
+        }
         option.innerHTML = `${choice.track.artists[0].name} – ${choice.track.name}`
 
         if (option.innerHTML == correctAnswer) {
@@ -284,11 +287,17 @@ function nextSong() {
     play(deviceID, current.track.uri)
 
     start = (new Date()).getTime();
-    
+
     numSongs--;
 }
 
 function select(button) {
+    if (hardmode) {
+        button.style.opacity = "1";
+        correctButton.style.opacity = "1";
+        correctButton.style.transition = "opacity 0.75s"
+    }
+
     let answer = button.innerHTML
 
     let now = (new Date()).getTime();
@@ -297,15 +306,14 @@ function select(button) {
     if (answer == correctAnswer) {
         button.style.backgroundColor = "rgb(87,181,96)"
         correct++
-    }
-    else {
+    } else {
         button.style.backgroundColor = "darkred"
         correctButton.style.backgroundColor = "rgb(87,181,96)"
     }
 
     total++;
 
-    setTimeout(function() {
+    setTimeout(function () {
         document.getElementById("score").innerHTML = `Score: ${correct} / ${total}`;
 
         // Clear and get ready for next song
@@ -315,20 +323,19 @@ function select(button) {
 
         if (remaining.length > 0 && numSongs > 0) {
             nextSong()
-        }
-        else {
+        } else {
             clearInterval(timeInterval)
 
             let time = document.getElementById("time")
             time.innerHTML = `Total time: ${(Math.round((totalTime * 10)) / 10).toFixed(1)}`
-            
+
             player.pause()
             player.disconnect()
 
             menu.innerHTML = "<h3>Congratulations!<br></h3>"
         }
     }, 1500)
-    
+
 }
 
 function timer() {
