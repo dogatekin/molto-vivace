@@ -35,7 +35,7 @@ const authEndpoint = 'https://accounts.spotify.com/authorize';
 // Replace with your app's client ID, redirect URI and desired scopes
 const clientId = '96e1183ff4d14390a4afd7902e2ac80d';
 const redirectUri = 'https://dogatekin.github.io/molto-vivace/'; // online
-// const redirectUri = 'http://localhost:8080/index.html'; // local
+// const redirectUri = 'http://localhost:5500/index.html'; // local
 const scopes = [
     'streaming',
     'user-modify-playback-state'
@@ -140,6 +140,8 @@ function createMenu() {
 }
 
 function selectPlaylist() {
+    player.activateElement();
+
     numOptions = document.getElementById("numOptions").value;
     numSongs = document.getElementById("numSongs").value;
     hardmode = document.getElementById("hardmode").checked;
